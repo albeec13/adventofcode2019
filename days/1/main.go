@@ -15,12 +15,24 @@ func main() {
     fuelTotal := 0
     modules := strings.Split(input, "\n")
 
-    for _,module := range modules {
-        if moduleInt,err := strconv.Atoi(module); err != nil {
+    for _,mass := range modules {
+        if massInt,err := strconv.Atoi(mass); err != nil {
             log.Fatal(err)
         } else {
-            fuelTotal += (moduleInt / 3 - 2)
+            fuelTotal += getFuel(massInt)
         }
     }
     fmt.Println("Total Fuel: ", fuelTotal)
+}
+
+func getFuel(mass int) int {
+    fuel := mass / 3 - 2
+
+    if (fuel > 0) {
+        fuel += getFuel(fuel)
+    } else {
+        fuel = 0
+    }
+
+    return fuel
 }
