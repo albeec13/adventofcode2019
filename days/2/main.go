@@ -23,67 +23,27 @@ func main() {
         }
     }
 
-    // override postions 1 and 2 with error code from program alarm in puzzle description
-    positions[1] = 12
-    positions[2] = 02
+    noun := 0
+    verb := 0
+    for noun = 0; noun < 100; noun++ {
+        result := 0
+        for verb = 0; verb < 100; verb++ {
+            // override postions 1 and 2 with error code from program alarm in puzzle description
+            positions[1] = noun
+            positions[2] = verb
 
-    const (
-        OPCODE = iota
-        ARGS
-        HALT
-    )
+            var cpu Intcodecpu
+            cpu.Init(positions)
+            result = cpu.Process()
 
-    add := func(args []int) (int, int) {
-        return positions[args[0]] + positions[args[1]], OPCODE
-    }
-
-	multiply := func(args []int) (int, int) {
-        return positions[args[0]] * positions[args[1]], OPCODE
-    }
-
-	halt := func(args []int) (int, int) {
-        return 0, HALT
-    }
-
-    type opdef struct {
-        exec func(args []int) (int, int)
-        argcnt int
-    }
-
-    operations := map[int]opdef {
-        1 : {add,3},
-        2 : {multiply,3},
-        99: {halt,0},
-    }
-
-    state := OPCODE
-    opcode := 0
-    args := make([]int, 3)
-    argcnt := 0
-    for _, intcode := range positions {
-        switch state {
-        case OPCODE:
-            opcode = intcode
-            argcnt = operations[intcode].argcnt
-            state = ARGS
-        case ARGS:
-            if argcnt > 0 {
-                args[3 - argcnt] = intcode
-                argcnt--
+            if result == 19690720 {
+                break;
             }
-            if argcnt == 0 {
-                var retval int
-                retval, state = operations[opcode].exec(args)
-                fmt.Printf("%d - %d\n", state, retval)
-                if state == HALT {
-                    break;
-                } else {
-                    positions[args[2]] = retval
-                }
-            }
+        }
+        if result == 19690720 {
+            fmt.Printf("Initital condition: %d\n", noun * 100 + verb)
+            break;
         }
     }
 
-    // display result in position 0
-    fmt.Printf("Position 0: %d\n", positions[0])
 }
